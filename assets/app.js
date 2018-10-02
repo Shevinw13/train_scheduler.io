@@ -1,4 +1,5 @@
-   // Initialize Firebase
+
+ // Initialize Firebase
    var config = {
     apiKey: "AIzaSyCTKc1pzsQ-KD1DIyZFh9zg2gq61xCkXRI",
     authDomain: "trainschedulershevin.firebaseapp.com",
@@ -17,7 +18,8 @@
     // Grabs user input
     var trainName = $("#train-name-input").val().trim();
     var trainDestination = $("#destination-input").val().trim();
-    var trainTime = moment($("#time-input").val().trim(), "HH:mm").format("X");
+    var unTrainTime = $("#time-input").val().trim();
+    var trainTime = moment().format(unTrainTime,"HH:mm"); 
     var trainFrequency = $("#frequency-input").val().trim();
   
     // Creates local "temporary" object for holding train data
@@ -40,20 +42,31 @@
     alert("Train successfully added");
 
   // Clears all of the text-boxes
-  $("train-name-input").val("");
+  $("#train-name-input").val("");
   $("#destination-input").val("");
   $("#time-input").val("");
   $("#frequency-input").val("");
 })
 
-var newRow = $("<tr>").append(
-  $("<td>").text(trainName),
-  $("<td>").text(trainDestination),
-  $("<td>").text(trainTime),
-  $("<td>").text(trainFrequency)
-);
+database.ref().on("child_added", function(childSnapshot) {
+  console.log(childSnapshot.val());
 
-// Append the new row to the table
-$("#train-table > tbody").append(newRow);
+  var trainName = childSnapshot.val().name;
+  var trainDestination = childSnapshot.val().destination;
+  var trainTime = childSnapshot.val().time;
+  var trainFrequency = childSnapshot.val().frequency;
+  console.log(trainName,trainDestination, trainTime, trainFrequency);
+
+
+  $("#train-table").append(
+    "<tr><td>"+ trainName +
+    "</td><td>" + trainDestination +
+    "</td><td>" + trainTime + 
+    "</td><td>" + trainFrequency + "</tr></td>");
+
+  $("#employee-table > tbody").append(newRow);
+  
+})
+
 
 
